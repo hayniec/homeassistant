@@ -1,0 +1,25 @@
+# Groups
+# https://www.home-assistant.io/integrations/group/
+
+# all_lights:
+#   name: All Lights
+#   entities:
+#     - light.living_room
+#     - light.bedroom
+#     - light.kitchen
+#     - light.bathroom
+#     - light.office
+
+# downstairs_lights:
+#   name: Downstairs Lights
+#   entities:
+#     - light.living_room
+#     - light.kitchen
+#     - light.dining_room
+
+# upstairs_lights:
+#   name: Upstairs Lights
+#   entities:
+#     - light.bedroom
+#     - light.bathroom
+#     - light.office

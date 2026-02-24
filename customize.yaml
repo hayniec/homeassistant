@@ -1,0 +1,16 @@
+# Entity Customizations
+# Add friendly names, icons, and other customizations here
+
+# Example customizations (uncomment and modify for your entities):
+
+# light.living_room:
+#   friendly_name: "Living Room Light"
+#   icon: mdi:ceiling-light
+
+# light.bedroom:
+#   friendly_name: "Bedroom Light"
+#   icon: mdi:lamp
+
+# sensor.temperature:
+#   friendly_name: "Indoor Temperature"
+#   icon: mdi:thermometer

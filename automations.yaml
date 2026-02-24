@@ -1,0 +1,127 @@
+# Automations
+# https://www.home-assistant.io/docs/automation/
+
+# ── Sunrise / Sunset ─────────────────────────────────────────────
+- id: sunrise_lights_off
+  alias: "Sunrise - Turn Off Night Lights"
+  trigger:
+    - platform: sun
+      event: sunrise
+      offset: "+00:30:00"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: all
+
+- id: sunset_lights_on
+  alias: "Sunset - Turn On Ambient Lights"
+  trigger:
+    - platform: sun
+      event: sunset
+      offset: "-00:15:00"
+  condition:
+    - condition: state
+      entity_id: input_select.house_mode
+      state: "Home"
+  action:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.living_room
+          - light.kitchen
+      data:
+        brightness: 180
+        color_temp: 370
+
+# ── Good Night Mode ──────────────────────────────────────────────
+- id: good_night_automation
+  alias: "Good Night - Shut Everything Down"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.good_night
+      to: "on"
+  action:
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: media_player.turn_off
+      target:
+        entity_id: all
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Night"
+    - delay: "00:00:05"
+    - service: input_boolean.turn_off
+      target:
+        entity_id: input_boolean.good_night
+
+# ── Vacation Mode ────────────────────────────────────────────────
+- id: vacation_random_lights
+  alias: "Vacation - Random Lights"
+  trigger:
+    - platform: time_pattern
+      hours: "/1"
+  condition:
+    - condition: state
+      entity_id: input_boolean.vacation_mode
+      to: "on"
+    - condition: sun
+      after: sunset
+      before: sunrise
+  action:
+    - service: light.toggle
+      target:
+        entity_id: light.living_room
+
+# ── Weather Alerts ───────────────────────────────────────────────
+- id: severe_weather_alert
+  alias: "Weather - Severe Weather Notification"
+  trigger:
+    - platform: state
+      entity_id: weather.home
+  condition:
+    - condition: template
+      value_template: >-
+        {{ trigger.to_state.state in ['lightning-rainy', 'hail', 'exceptional'] }}
+  action:
+    - service: notify.notify
+      data:
+        title: "Severe Weather Alert"
+        message: >-
+          Weather has changed to {{ states('weather.home') | replace('_', ' ') | title }}.
+          Temperature: {{ state_attr('weather.home', 'temperature') }}°
+
+# ── Temperature Alert ────────────────────────────────────────────
+- id: high_temperature_alert
+  alias: "Climate - High Temperature Alert"
+  trigger:
+    - platform: numeric_state
+      entity_id: weather.home
+      attribute: temperature
+      above: 95
+  action:
+    - service: notify.notify
+      data:
+        title: "High Temperature Warning"
+        message: "Outside temperature has exceeded 95°F!"
+
+# ── Guest Mode ───────────────────────────────────────────────────
+- id: guest_mode_on
+  alias: "Guest Mode - Welcome Setup"
+  trigger:
+    - platform: state
+      entity_id: input_boolean.guest_mode
+      to: "on"
+  action:
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Guest"
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness: 200

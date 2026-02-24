@@ -1,0 +1,968 @@
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Home Dashboard — Modern UI with Mushroom Cards
+#  Requires HACS plugins: mushroom, mini-graph-card, layout-card,
+#  card-mod, mini-media-player, weather-card, apexcharts-card
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+title: Home
+views:
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 1: HOME OVERVIEW
+  # ════════════════════════════════════════════════════════════════
+  - title: Home
+    path: home
+    icon: mdi:home
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 4
+    badges: []
+    cards:
+      # ── Welcome Header ──────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "{{ states('sensor.greeting') }}"
+        secondary: >-
+          {{ now().strftime('%A, %B %-d') }} · {{ states('sensor.house_status') }}
+        icon: mdi:home-heart
+        icon_color: indigo
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+              --primary-text-color: #e2e8f0;
+              --secondary-text-color: #c7d2fe;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(199, 210, 254, 0.2) !important;
+              --icon-color: #c7d2fe !important;
+            }
+
+      # ── Quick Action Chips ──────────────────────────────────────
+      - type: custom:mushroom-chips-card
+        alignment: center
+        chips:
+          - type: entity
+            entity: input_select.house_mode
+            icon: mdi:home-variant
+            tap_action:
+              action: more-info
+          - type: entity
+            entity: sensor.total_lights_on
+            icon: mdi:lightbulb-group
+            tap_action:
+              action: none
+          - type: entity
+            entity: sensor.active_media_players
+            icon: mdi:speaker
+            tap_action:
+              action: none
+          - type: weather
+            entity: weather.home
+            show_temperature: true
+            show_conditions: true
+          - type: template
+            icon: mdi:moon-waning-crescent
+            tap_action:
+              action: toggle
+            entity: input_boolean.good_night
+            icon_color: "{{ 'blue' if is_state('input_boolean.good_night', 'on') else 'grey' }}"
+
+      # ── Weather Forecast Card ───────────────────────────────────
+      - type: weather-forecast
+        entity: weather.home
+        show_forecast: true
+        forecast_type: daily
+        card_mod:
+          style: |
+            ha-card {
+              border-radius: 16px;
+            }
+
+      # ── Detailed Weather (custom weather-card) ──────────────────
+      - type: custom:weather-card
+        entity: weather.home
+        number_of_forecasts: "5"
+        current: true
+        details: true
+        forecast: true
+
+      # ── Temperature Graph ───────────────────────────────────────
+      - type: custom:mini-graph-card
+        name: Temperature Trend
+        icon: mdi:thermometer
+        entities:
+          - entity: weather.home
+            attribute: temperature
+            name: Outside
+            color: "#818cf8"
+        hours_to_show: 24
+        points_per_hour: 2
+        line_width: 3
+        font_size: 75
+        animate: true
+        show:
+          labels: true
+          points: false
+          legend: true
+          fill: true
+        color_thresholds:
+          - value: 32
+            color: "#38bdf8"
+          - value: 60
+            color: "#4ade80"
+          - value: 80
+            color: "#fbbf24"
+          - value: 95
+            color: "#ef4444"
+
+      # ── House Mode Control ──────────────────────────────────────
+      - type: custom:mushroom-select-card
+        entity: input_select.house_mode
+        icon: mdi:home-variant
+        fill_container: true
+        card_mod:
+          style: |
+            ha-card {
+              border-left: 3px solid #818cf8;
+            }
+
+      # ── Quick Toggle Buttons ────────────────────────────────────
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: input_boolean.guest_mode
+            icon: mdi:account-group
+            tap_action:
+              action: toggle
+            icon_color: amber
+            fill_container: true
+          - type: custom:mushroom-entity-card
+            entity: input_boolean.vacation_mode
+            icon: mdi:airplane
+            tap_action:
+              action: toggle
+            icon_color: blue
+            fill_container: true
+          - type: custom:mushroom-entity-card
+            entity: input_boolean.do_not_disturb
+            icon: mdi:bell-off
+            tap_action:
+              action: toggle
+            icon_color: red
+            fill_container: true
+          - type: custom:mushroom-entity-card
+            entity: input_boolean.good_night
+            icon: mdi:weather-night
+            tap_action:
+              action: toggle
+            icon_color: deep-purple
+            fill_container: true
+
+      # ── Sun Position ────────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Sun"
+        secondary: >-
+          Rise: {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%I:%M %p') }}
+          · Set: {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%I:%M %p') }}
+        icon: >-
+          {{ 'mdi:weather-sunny' if is_state('sun.sun', 'above_horizon') else 'mdi:weather-night' }}
+        icon_color: >-
+          {{ 'amber' if is_state('sun.sun', 'above_horizon') else 'indigo' }}
+
+      # ── System Monitor ──────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "System Health"
+        secondary: >-
+          CPU: {{ states('sensor.processor_use_percent') }}%
+          · RAM: {{ states('sensor.memory_use_percent') }}%
+          · Disk: {{ states('sensor.disk_use_percent') }}%
+        icon: mdi:server
+        icon_color: teal
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 2: WEATHER DETAIL
+  # ════════════════════════════════════════════════════════════════
+  - title: Weather
+    path: weather
+    icon: mdi:weather-partly-cloudy
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Weather Header ──────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Weather"
+        secondary: "{{ states('sensor.weather_summary') }}"
+        icon: mdi:weather-partly-cloudy
+        icon_color: amber
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+              --primary-text-color: #e2e8f0;
+              --secondary-text-color: #bae6fd;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(186, 230, 253, 0.2) !important;
+              --icon-color: #fbbf24 !important;
+            }
+
+      # ── Current Weather ─────────────────────────────────────────
+      - type: weather-forecast
+        entity: weather.home
+        show_forecast: true
+        forecast_type: daily
+
+      # ── Hourly Forecast ─────────────────────────────────────────
+      - type: weather-forecast
+        entity: weather.home
+        show_forecast: true
+        forecast_type: hourly
+
+      # ── Temperature History (ApexCharts) ────────────────────────
+      - type: custom:apexcharts-card
+        header:
+          title: Temperature History
+          show: true
+        graph_span: 48h
+        span:
+          start: day
+          offset: "-1d"
+        apex_config:
+          chart:
+            height: 250
+          stroke:
+            width: 3
+            curve: smooth
+          fill:
+            type: gradient
+            gradient:
+              shadeIntensity: 0.1
+              opacityFrom: 0.5
+              opacityTo: 0.1
+        series:
+          - entity: weather.home
+            attribute: temperature
+            name: Temperature
+            color: "#818cf8"
+            type: area
+
+      # ── Humidity Graph ──────────────────────────────────────────
+      - type: custom:mini-graph-card
+        name: Humidity
+        icon: mdi:water-percent
+        entities:
+          - entity: weather.home
+            attribute: humidity
+            name: Humidity
+            color: "#38bdf8"
+        hours_to_show: 24
+        line_width: 2
+        font_size: 75
+        animate: true
+        show:
+          labels: true
+          fill: true
+
+      # ── Wind Speed ──────────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Wind"
+        secondary: >-
+          {{ state_attr('weather.home', 'wind_speed') }} mph
+          · {{ state_attr('weather.home', 'wind_bearing') }}°
+        icon: mdi:weather-windy
+        icon_color: cyan
+
+      # ── Pressure ────────────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Pressure"
+        secondary: >-
+          {{ state_attr('weather.home', 'pressure') }} hPa
+        icon: mdi:gauge
+        icon_color: green
+
+      # ── Visibility ──────────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Visibility"
+        secondary: >-
+          {{ state_attr('weather.home', 'visibility') }} mi
+        icon: mdi:eye
+        icon_color: purple
+
+      # ── UV Index & Sun ──────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Sun Position"
+        secondary: >-
+          Elevation: {{ state_attr('sun.sun', 'elevation') }}°
+          · Azimuth: {{ state_attr('sun.sun', 'azimuth') }}°
+        icon: mdi:white-balance-sunny
+        icon_color: >-
+          {{ 'amber' if state_attr('sun.sun', 'elevation') | float > 0 else 'indigo' }}
+
+      # ── Season ──────────────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Season"
+        secondary: "{{ states('sensor.season') | title }}"
+        icon: >-
+          {% set s = states('sensor.season') %}
+          {% if s == 'spring' %}mdi:flower
+          {% elif s == 'summer' %}mdi:white-balance-sunny
+          {% elif s == 'autumn' %}mdi:leaf-maple
+          {% else %}mdi:snowflake
+          {% endif %}
+        icon_color: >-
+          {% set s = states('sensor.season') %}
+          {% if s == 'spring' %}pink
+          {% elif s == 'summer' %}amber
+          {% elif s == 'autumn' %}orange
+          {% else %}blue
+          {% endif %}
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 3: LIGHTS
+  # ════════════════════════════════════════════════════════════════
+  - title: Lights
+    path: lights
+    icon: mdi:lightbulb-group
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Lights Header ───────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Lighting"
+        secondary: "{{ states('sensor.total_lights_on') }} lights currently on"
+        icon: mdi:lightbulb-group
+        icon_color: amber
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #78350f 0%, #92400e 50%, #b45309 100%);
+              --primary-text-color: #fef3c7;
+              --secondary-text-color: #fde68a;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(253, 230, 138, 0.2) !important;
+              --icon-color: #fde68a !important;
+            }
+
+      # ── Living Room Light ───────────────────────────────────────
+      - type: custom:mushroom-light-card
+        entity: light.living_room
+        name: Living Room
+        icon: mdi:sofa
+        show_brightness_control: true
+        show_color_temp_control: true
+        show_color_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+      # ── Bedroom Light ───────────────────────────────────────────
+      - type: custom:mushroom-light-card
+        entity: light.bedroom
+        name: Bedroom
+        icon: mdi:bed
+        show_brightness_control: true
+        show_color_temp_control: true
+        show_color_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+      # ── Kitchen Light ───────────────────────────────────────────
+      - type: custom:mushroom-light-card
+        entity: light.kitchen
+        name: Kitchen
+        icon: mdi:countertop
+        show_brightness_control: true
+        show_color_temp_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+      # ── Office Light ────────────────────────────────────────────
+      - type: custom:mushroom-light-card
+        entity: light.office
+        name: Office
+        icon: mdi:desk-lamp
+        show_brightness_control: true
+        show_color_temp_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+      # ── Bathroom Light ──────────────────────────────────────────
+      - type: custom:mushroom-light-card
+        entity: light.bathroom
+        name: Bathroom
+        icon: mdi:shower-head
+        show_brightness_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+      # ── Outdoor Lights ──────────────────────────────────────────
+      - type: custom:mushroom-light-card
+        entity: light.porch
+        name: Porch
+        icon: mdi:outdoor-lamp
+        show_brightness_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+      # ── All Lights Toggle ───────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "All Lights Off"
+        secondary: "Turn off every light in the house"
+        icon: mdi:lightbulb-off
+        icon_color: red
+        tap_action:
+          action: call-service
+          service: light.turn_off
+          target:
+            entity_id: all
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 4: CLIMATE
+  # ════════════════════════════════════════════════════════════════
+  - title: Climate
+    path: climate
+    icon: mdi:thermostat
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Climate Header ──────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Climate Control"
+        secondary: >-
+          Outside: {{ state_attr('weather.home', 'temperature') }}°F
+          · {{ state_attr('weather.home', 'humidity') }}% humidity
+        icon: mdi:thermostat
+        icon_color: orange
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
+              --primary-text-color: #ffedd5;
+              --secondary-text-color: #fed7aa;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(254, 215, 170, 0.2) !important;
+              --icon-color: #fed7aa !important;
+            }
+
+      # ── Main Thermostat ─────────────────────────────────────────
+      - type: custom:mushroom-climate-card
+        entity: climate.thermostat
+        name: Main Thermostat
+        icon: mdi:thermostat
+        show_temperature_control: true
+        hvac_modes:
+          - "off"
+          - heat
+          - cool
+          - heat_cool
+          - auto
+        fill_container: true
+        collapsible_controls: true
+
+      # ── Indoor Temperature Graph ────────────────────────────────
+      - type: custom:mini-graph-card
+        name: Indoor Climate
+        icon: mdi:home-thermometer
+        entities:
+          - entity: climate.thermostat
+            attribute: current_temperature
+            name: Indoor Temp
+            color: "#f97316"
+          - entity: weather.home
+            attribute: temperature
+            name: Outdoor Temp
+            color: "#38bdf8"
+        hours_to_show: 24
+        points_per_hour: 2
+        line_width: 2
+        font_size: 75
+        animate: true
+        show:
+          labels: true
+          legend: true
+          fill: fade
+
+      # ── Humidity Display ────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Humidity"
+        secondary: >-
+          Outdoor: {{ state_attr('weather.home', 'humidity') }}%
+        icon: mdi:water-percent
+        icon_color: blue
+
+      # ── Fan Control ─────────────────────────────────────────────
+      - type: custom:mushroom-fan-card
+        entity: fan.living_room
+        name: Living Room Fan
+        icon: mdi:fan
+        show_percentage_control: true
+        show_oscillate_control: true
+        fill_container: true
+        collapsible_controls: true
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 5: MEDIA
+  # ════════════════════════════════════════════════════════════════
+  - title: Media
+    path: media
+    icon: mdi:play-circle
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Media Header ────────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Media"
+        secondary: "{{ states('sensor.active_media_players') }} devices playing"
+        icon: mdi:play-circle
+        icon_color: pink
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #831843 0%, #9d174d 50%, #be185d 100%);
+              --primary-text-color: #fce7f3;
+              --secondary-text-color: #fbcfe8;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(251, 207, 232, 0.2) !important;
+              --icon-color: #fbcfe8 !important;
+            }
+
+      # ── Living Room TV ──────────────────────────────────────────
+      - type: custom:mini-media-player
+        entity: media_player.living_room_tv
+        name: Living Room TV
+        artwork: cover
+        source: icon
+        sound_mode: icon
+        info: scroll
+        volume_stateless: false
+        toggle_power: true
+        hide:
+          shuffle: true
+          icon: false
+
+      # ── Bedroom Speaker ─────────────────────────────────────────
+      - type: custom:mini-media-player
+        entity: media_player.bedroom_speaker
+        name: Bedroom Speaker
+        artwork: cover
+        source: icon
+        info: scroll
+        volume_stateless: false
+        toggle_power: true
+        hide:
+          shuffle: false
+          icon: false
+
+      # ── Kitchen Speaker ─────────────────────────────────────────
+      - type: custom:mini-media-player
+        entity: media_player.kitchen_speaker
+        name: Kitchen Speaker
+        artwork: cover
+        source: icon
+        info: scroll
+        volume_stateless: false
+        toggle_power: true
+
+      # ── Office Speaker ──────────────────────────────────────────
+      - type: custom:mini-media-player
+        entity: media_player.office_speaker
+        name: Office Speaker
+        artwork: cover
+        source: icon
+        info: scroll
+        volume_stateless: false
+        toggle_power: true
+
+      # ── Media Browser ───────────────────────────────────────────
+      - type: media-control
+        entity: media_player.living_room_tv
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 6: SECURITY
+  # ════════════════════════════════════════════════════════════════
+  - title: Security
+    path: security
+    icon: mdi:shield-home
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Security Header ─────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Security"
+        secondary: >-
+          {% set doors = states.binary_sensor
+            | selectattr('attributes.device_class', 'defined')
+            | selectattr('attributes.device_class', 'eq', 'door')
+            | selectattr('state', 'eq', 'on') | list | count %}
+          {% set windows = states.binary_sensor
+            | selectattr('attributes.device_class', 'defined')
+            | selectattr('attributes.device_class', 'eq', 'window')
+            | selectattr('state', 'eq', 'on') | list | count %}
+          {{ doors }} doors open · {{ windows }} windows open
+        icon: mdi:shield-home
+        icon_color: green
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+              --primary-text-color: #d1fae5;
+              --secondary-text-color: #a7f3d0;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(167, 243, 208, 0.2) !important;
+              --icon-color: #a7f3d0 !important;
+            }
+
+      # ── Alarm Panel ─────────────────────────────────────────────
+      - type: alarm-panel
+        entity: alarm_control_panel.home_alarm
+        states:
+          - arm_home
+          - arm_away
+          - arm_night
+
+      # ── Front Door ─────────────────────────────────────────────
+      - type: custom:mushroom-entity-card
+        entity: binary_sensor.front_door
+        name: Front Door
+        icon: mdi:door
+        fill_container: true
+
+      # ── Back Door ──────────────────────────────────────────────
+      - type: custom:mushroom-entity-card
+        entity: binary_sensor.back_door
+        name: Back Door
+        icon: mdi:door-sliding
+        fill_container: true
+
+      # ── Garage Door ────────────────────────────────────────────
+      - type: custom:mushroom-cover-card
+        entity: cover.garage_door
+        name: Garage Door
+        icon: mdi:garage
+        show_buttons_control: true
+        fill_container: true
+
+      # ── Motion Sensors ──────────────────────────────────────────
+      - type: grid
+        columns: 2
+        square: false
+        cards:
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.motion_front_yard
+            name: Front Yard
+            icon: mdi:motion-sensor
+            fill_container: true
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.motion_back_yard
+            name: Back Yard
+            icon: mdi:motion-sensor
+            fill_container: true
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.motion_driveway
+            name: Driveway
+            icon: mdi:motion-sensor
+            fill_container: true
+          - type: custom:mushroom-entity-card
+            entity: binary_sensor.motion_garage
+            name: Garage
+            icon: mdi:motion-sensor
+            fill_container: true
+
+      # ── Front Door Camera ───────────────────────────────────────
+      - type: picture-entity
+        entity: camera.front_door
+        name: Front Door Camera
+        show_name: true
+        show_state: true
+        camera_view: live
+
+      # ── Backyard Camera ─────────────────────────────────────────
+      - type: picture-entity
+        entity: camera.backyard
+        name: Backyard Camera
+        show_name: true
+        show_state: true
+        camera_view: live
+
+      # ── Lock Control ────────────────────────────────────────────
+      - type: custom:mushroom-lock-card
+        entity: lock.front_door
+        name: Front Door Lock
+        fill_container: true
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 7: ENERGY
+  # ════════════════════════════════════════════════════════════════
+  - title: Energy
+    path: energy
+    icon: mdi:flash
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Energy Header ───────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Energy"
+        secondary: >-
+          Estimated daily usage: {{ states('sensor.daily_energy') }} kWh
+        icon: mdi:flash
+        icon_color: yellow
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #713f12 0%, #854d0e 50%, #a16207 100%);
+              --primary-text-color: #fef9c3;
+              --secondary-text-color: #fef08a;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(254, 240, 138, 0.2) !important;
+              --icon-color: #fef08a !important;
+            }
+
+      # ── Energy Usage Graph ──────────────────────────────────────
+      - type: custom:apexcharts-card
+        header:
+          title: Energy Consumption
+          show: true
+        graph_span: 7d
+        span:
+          start: day
+          offset: "-6d"
+        apex_config:
+          chart:
+            height: 300
+            type: bar
+          plotOptions:
+            bar:
+              borderRadius: 4
+              columnWidth: "60%"
+          fill:
+            type: gradient
+            gradient:
+              shade: dark
+              type: vertical
+              shadeIntensity: 0.3
+              opacityFrom: 1
+              opacityTo: 0.8
+        series:
+          - entity: sensor.daily_energy
+            name: Daily Usage
+            type: column
+            color: "#eab308"
+            group_by:
+              func: max
+              duration: 1d
+
+      # ── Power Usage Gauge ───────────────────────────────────────
+      - type: gauge
+        entity: sensor.daily_energy
+        name: Today's Usage
+        min: 0
+        max: 50
+        severity:
+          green: 0
+          yellow: 20
+          red: 35
+        needle: true
+
+      # ── System Monitor ──────────────────────────────────────────
+      - type: custom:mini-graph-card
+        name: CPU Usage
+        icon: mdi:chip
+        entities:
+          - entity: sensor.processor_use_percent
+            name: CPU
+            color: "#818cf8"
+        hours_to_show: 6
+        line_width: 2
+        font_size: 75
+        animate: true
+        show:
+          labels: true
+          fill: fade
+
+      - type: custom:mini-graph-card
+        name: Memory Usage
+        icon: mdi:memory
+        entities:
+          - entity: sensor.memory_use_percent
+            name: Memory
+            color: "#f472b6"
+        hours_to_show: 6
+        line_width: 2
+        font_size: 75
+        animate: true
+        show:
+          labels: true
+          fill: fade
+
+      - type: custom:mini-graph-card
+        name: Disk Usage
+        icon: mdi:harddisk
+        entities:
+          - entity: sensor.disk_use_percent
+            name: Disk
+            color: "#4ade80"
+        hours_to_show: 24
+        line_width: 2
+        font_size: 75
+        animate: true
+        show:
+          labels: true
+          fill: fade
+
+  # ════════════════════════════════════════════════════════════════
+  #  VIEW 8: AUTOMATIONS & SETTINGS
+  # ════════════════════════════════════════════════════════════════
+  - title: Settings
+    path: settings
+    icon: mdi:cog
+    type: custom:layout-card
+    layout:
+      type: masonry
+      max_cols: 3
+    cards:
+      # ── Settings Header ─────────────────────────────────────────
+      - type: custom:mushroom-template-card
+        primary: "Settings & Automations"
+        secondary: "Manage your smart home"
+        icon: mdi:cog
+        icon_color: grey
+        card_mod:
+          style: |
+            ha-card {
+              background: linear-gradient(135deg, #1e293b 0%, #334155 50%, #475569 100%);
+              --primary-text-color: #e2e8f0;
+              --secondary-text-color: #cbd5e1;
+              padding: 8px;
+            }
+            mushroom-shape-icon {
+              --shape-color: rgba(203, 213, 225, 0.2) !important;
+              --icon-color: #cbd5e1 !important;
+            }
+
+      # ── Active Automations ──────────────────────────────────────
+      - type: entities
+        title: Automations
+        show_header_toggle: false
+        entities:
+          - entity: automation.sunrise_lights_off
+            name: Sunrise Lights Off
+            icon: mdi:weather-sunset-up
+          - entity: automation.sunset_lights_on
+            name: Sunset Ambient Lights
+            icon: mdi:weather-sunset-down
+          - entity: automation.good_night_automation
+            name: Good Night Routine
+            icon: mdi:weather-night
+          - entity: automation.vacation_random_lights
+            name: Vacation Random Lights
+            icon: mdi:airplane
+          - entity: automation.severe_weather_alert
+            name: Severe Weather Alert
+            icon: mdi:weather-lightning
+          - entity: automation.high_temperature_alert
+            name: High Temp Alert
+            icon: mdi:thermometer-alert
+          - entity: automation.guest_mode_on
+            name: Guest Mode Welcome
+            icon: mdi:account-group
+
+      # ── House Mode Controls ─────────────────────────────────────
+      - type: entities
+        title: Mode Switches
+        show_header_toggle: false
+        entities:
+          - entity: input_select.house_mode
+          - entity: input_boolean.guest_mode
+          - entity: input_boolean.vacation_mode
+          - entity: input_boolean.do_not_disturb
+          - entity: input_boolean.good_night
+
+      # ── System Info ─────────────────────────────────────────────
+      - type: entities
+        title: System Information
+        show_header_toggle: false
+        entities:
+          - entity: sensor.processor_use_percent
+            name: CPU Usage
+            icon: mdi:chip
+          - entity: sensor.memory_use_percent
+            name: Memory Usage
+            icon: mdi:memory
+          - entity: sensor.disk_use_percent
+            name: Disk Usage
+            icon: mdi:harddisk
+          - entity: sensor.last_boot
+            name: Last Boot
+            icon: mdi:restart
+          - entity: sensor.date_time
+            name: Current Date & Time
+            icon: mdi:clock
+
+      # ── Quick Links ─────────────────────────────────────────────
+      - type: grid
+        columns: 2
+        square: true
+        cards:
+          - type: custom:mushroom-template-card
+            primary: HACS
+            icon: mdi:store
+            icon_color: cyan
+            tap_action:
+              action: navigate
+              navigation_path: /hacs
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Devices
+            icon: mdi:devices
+            icon_color: orange
+            tap_action:
+              action: navigate
+              navigation_path: /config/devices/dashboard
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Integrations
+            icon: mdi:puzzle
+            icon_color: green
+            tap_action:
+              action: navigate
+              navigation_path: /config/integrations
+            layout: vertical
+          - type: custom:mushroom-template-card
+            primary: Logs
+            icon: mdi:text-box
+            icon_color: red
+            tap_action:
+              action: navigate
+              navigation_path: /config/logs
+            layout: vertical

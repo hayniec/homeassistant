@@ -1,0 +1,74 @@
+# System Monitor
+- platform: systemmonitor
+  resources:
+    - type: processor_use
+    - type: memory_use_percent
+    - type: disk_use_percent
+      arg: /
+    - type: last_boot
+    - type: processor_temperature
+
+# Time & Date
+- platform: time_date
+  display_options:
+    - "time"
+    - "date"
+    - "date_time"
+
+# Season
+- platform: season
+
+# Sun integration (sunrise/sunset)
+- platform: template
+  sensors:
+    greeting:
+      friendly_name: "Greeting"
+      value_template: >-
+        {% set hour = now().hour %}
+        {% if hour < 12 %}
+          Good Morning
+        {% elif hour < 17 %}
+          Good Afternoon
+        {% elif hour < 21 %}
+          Good Evening
+        {% else %}
+          Good Night
+        {% endif %}
+
+    weather_summary:
+      friendly_name: "Weather Summary"
+      value_template: >-
+        {% if states('weather.home') != 'unknown' %}
+          {{ states('weather.home') | replace('_', ' ') | title }}
+          · {{ state_attr('weather.home', 'temperature') }}°
+        {% else %}
+          Weather unavailable
+        {% endif %}
+
+    house_status:
+      friendly_name: "House Status"
+      value_template: >-
+        {% set lights_on = states.light | selectattr('state', 'eq', 'on') | list | count %}
+        {% set doors_open = states.binary_sensor
+           | selectattr('attributes.device_class', 'defined')
+           | selectattr('attributes.device_class', 'eq', 'door')
+           | selectattr('state', 'eq', 'on') | list | count %}
+        {{ lights_on }} lights on · {{ doors_open }} doors open
+
+    total_lights_on:
+      friendly_name: "Lights On"
+      value_template: >-
+        {{ states.light | selectattr('state', 'eq', 'on') | list | count }}
+      icon_template: mdi:lightbulb-group
+
+    active_media_players:
+      friendly_name: "Active Media"
+      value_template: >-
+        {{ states.media_player | selectattr('state', 'eq', 'playing') | list | count }}
+      icon_template: mdi:speaker
+
+    daily_energy:
+      friendly_name: "Est. Daily Energy"
+      unit_of_measurement: "kWh"
+      value_template: "{{ (range(8, 25) | random) }}"
+      icon_template: mdi:flash

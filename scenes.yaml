@@ -1,0 +1,38 @@
+# Scenes
+# https://www.home-assistant.io/integrations/scene/
+
+# - name: Movie Night
+#   icon: mdi:movie-open
+#   entities:
+#     light.living_room:
+#       state: "on"
+#       brightness: 50
+#       color_temp: 400
+#     light.kitchen:
+#       state: "off"
+#     media_player.living_room:
+#       state: "on"
+
+# - name: Morning Routine
+#   icon: mdi:weather-sunny
+#   entities:
+#     light.kitchen:
+#       state: "on"
+#       brightness: 255
+#       color_temp: 250
+#     light.bedroom:
+#       state: "on"
+#       brightness: 128
+#       color_temp: 300
+
+# - name: Good Night
+#   icon: mdi:weather-night
+#   entities:
+#     light.living_room:
+#       state: "off"
+#     light.kitchen:
+#       state: "off"
+#     light.bedroom:
+#       state: "on"
+#       brightness: 30
+#       color_temp: 450

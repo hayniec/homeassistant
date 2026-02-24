@@ -1,0 +1,128 @@
+modern_dashboard:
+  # Primary colors
+  primary-color: "#6366f1"
+  accent-color: "#818cf8"
+  primary-background-color: "#0f0f1a"
+  secondary-background-color: "#1a1a2e"
+  card-background-color: "#16213e"
+
+  # Text
+  primary-text-color: "#e2e8f0"
+  secondary-text-color: "#94a3b8"
+  text-primary-color: "#e2e8f0"
+  disabled-text-color: "#475569"
+
+  # Header
+  app-header-background-color: "#0f0f1a"
+  app-header-text-color: "#e2e8f0"
+
+  # Sidebar
+  sidebar-icon-color: "#94a3b8"
+  sidebar-text-color: "#e2e8f0"
+  sidebar-background-color: "#0f0f1a"
+  sidebar-selected-icon-color: "#818cf8"
+  sidebar-selected-text-color: "#818cf8"
+
+  # Cards
+  ha-card-background: "#16213e"
+  ha-card-border-radius: "16px"
+  ha-card-border-width: "0px"
+  ha-card-box-shadow: "0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2)"
+
+  # Divider
+  divider-color: "#1e293b"
+
+  # States
+  state-icon-active-color: "#818cf8"
+  state-active-color: "#818cf8"
+  state-icon-color: "#94a3b8"
+  switch-checked-color: "#6366f1"
+  switch-unchecked-button-color: "#475569"
+  switch-unchecked-track-color: "#1e293b"
+
+  # Badges
+  label-badge-background-color: "#16213e"
+  label-badge-text-color: "#e2e8f0"
+
+  # Slider
+  paper-slider-active-color: "#6366f1"
+  paper-slider-knob-color: "#818cf8"
+  paper-slider-container-color: "#1e293b"
+
+  # Toggle
+  paper-toggle-button-checked-bar-color: "#6366f1"
+  paper-toggle-button-checked-button-color: "#818cf8"
+  paper-toggle-button-unchecked-bar-color: "#1e293b"
+  paper-toggle-button-unchecked-button-color: "#475569"
+
+  # Chip
+  ha-chip-background-color: "#1e293b"
+  ha-chip-text-color: "#e2e8f0"
+
+  # Card-mod styles
+  card-mod-theme: modern_dashboard
+  card-mod-root: |
+    ha-tabs {
+      --paper-tabs-selection-bar-color: #818cf8 !important;
+    }
+  card-mod-card: |
+    ha-card {
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    ha-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3) !important;
+    }
+
+modern_dashboard_light:
+  # Primary colors
+  primary-color: "#6366f1"
+  accent-color: "#818cf8"
+  primary-background-color: "#f1f5f9"
+  secondary-background-color: "#e2e8f0"
+  card-background-color: "#ffffff"
+
+  # Text
+  primary-text-color: "#1e293b"
+  secondary-text-color: "#64748b"
+  text-primary-color: "#1e293b"
+  disabled-text-color: "#94a3b8"
+
+  # Header
+  app-header-background-color: "#ffffff"
+  app-header-text-color: "#1e293b"
+
+  # Sidebar
+  sidebar-icon-color: "#64748b"
+  sidebar-text-color: "#1e293b"
+  sidebar-background-color: "#ffffff"
+  sidebar-selected-icon-color: "#6366f1"
+  sidebar-selected-text-color: "#6366f1"
+
+  # Cards
+  ha-card-background: "#ffffff"
+  ha-card-border-radius: "16px"
+  ha-card-border-width: "0px"
+  ha-card-box-shadow: "0 1px 3px 0 rgba(0, 0, 0, 0.1), 0 1px 2px 0 rgba(0, 0, 0, 0.06)"
+
+  # Divider
+  divider-color: "#e2e8f0"
+
+  # States
+  state-icon-active-color: "#6366f1"
+  state-active-color: "#6366f1"
+  state-icon-color: "#64748b"
+  switch-checked-color: "#6366f1"
+  switch-unchecked-button-color: "#94a3b8"
+  switch-unchecked-track-color: "#e2e8f0"
+
+  # Card-mod
+  card-mod-theme: modern_dashboard_light
+  card-mod-card: |
+    ha-card {
+      transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+    }
+    ha-card:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.15), 0 2px 4px -1px rgba(0, 0, 0, 0.1) !important;
+    }

@@ -1,0 +1,112 @@
+# Home Assistant Configuration
+# https://www.home-assistant.io/docs/configuration/
+
+homeassistant:
+  name: Home
+  unit_system: imperial
+  time_zone: America/New_York
+  currency: USD
+  external_url: ""
+  internal_url: "http://homeassistant.local:8123"
+  customize: !include customize.yaml
+
+# Default integrations
+default_config:
+
+# Text-to-Speech
+tts:
+  - platform: google_translate
+
+# Frontend & Themes
+frontend:
+  themes: !include_dir_merge_named themes/
+
+# Lovelace Dashboards
+lovelace:
+  mode: yaml
+  resources:
+    # Mushroom Cards (install via HACS)
+    - url: /hacsfiles/lovelace-mushroom/mushroom.js
+      type: module
+    # Mini Graph Card (install via HACS)
+    - url: /hacsfiles/mini-graph-card/mini-graph-card-bundle.js
+      type: module
+    # layout-card (install via HACS)
+    - url: /hacsfiles/lovelace-layout-card/layout-card.js
+      type: module
+    # card-mod (install via HACS)
+    - url: /hacsfiles/lovelace-card-mod/card-mod.js
+      type: module
+    # mini-media-player (install via HACS)
+    - url: /hacsfiles/mini-media-player/mini-media-player-bundle.js
+      type: module
+    # weather-card (install via HACS)
+    - url: /hacsfiles/weather-card/weather-card.js
+      type: module
+    # ApexCharts Card (install via HACS)
+    - url: /hacsfiles/apexcharts-card/apexcharts-card.js
+      type: module
+  dashboards:
+    dashboard-main:
+      mode: yaml
+      filename: dashboards/main.yaml
+      title: Home Dashboard
+      icon: mdi:view-dashboard
+      show_in_sidebar: true
+
+# Weather
+weather:
+
+# Recorder & History
+recorder:
+  purge_keep_days: 10
+  commit_interval: 1
+
+history:
+
+logbook:
+
+# Input helpers
+input_boolean:
+  guest_mode:
+    name: Guest Mode
+    icon: mdi:account-group
+  vacation_mode:
+    name: Vacation Mode
+    icon: mdi:airplane
+  good_night:
+    name: Good Night Mode
+    icon: mdi:weather-night
+  do_not_disturb:
+    name: Do Not Disturb
+    icon: mdi:bell-off
+
+input_select:
+  house_mode:
+    name: House Mode
+    options:
+      - Home
+      - Away
+      - Night
+      - Guest
+      - Vacation
+    initial: Home
+    icon: mdi:home-variant
+
+# Sensors
+sensor: !include sensors.yaml
+
+# Automations
+automation: !include automations.yaml
+
+# Scripts
+script: !include scripts.yaml
+
+# Scenes
+scene: !include scenes.yaml
+
+# Groups
+group: !include groups.yaml
+
+# Shell commands
+shell_command:
