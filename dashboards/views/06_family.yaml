@@ -1,0 +1,112 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 6: FAMILY
+# ════════════════════════════════════════════════════════════════
+title: Family
+path: family
+icon: mdi:account-group
+badges: []
+cards:
+  # ── Family Header ──────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Family Hub"
+    secondary: >-
+      {{ now().strftime('%A, %B %-d, %Y') }}
+    icon: mdi:account-group
+    icon_color: teal
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #134e4a 0%, #115e59 50%, #0f766e 100%);
+          --primary-text-color: #ccfbf1;
+          --secondary-text-color: #99f6e4;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(153, 246, 228, 0.2) !important;
+          --icon-color: #99f6e4 !important;
+        }
+
+  # ── Shopping List ──────────────────────────────────────────
+  - type: shopping-list
+    title: Shopping List
+
+  # ── KidsChores Summary ─────────────────────────────────────
+  # CUSTOMIZE: The KidsChores integration creates many entities.
+  # Check Settings > Entities and filter by "kidschores" to find
+  # your specific entity IDs. Example entities below:
+  # - sensor.kidschores_<child_name>_points
+  # - sensor.kidschores_<child_name>_completed_today
+  # - binary_sensor.kidschores_<child_name>_all_done
+  #
+  # Replace these placeholder entities with your actual KidsChores entities:
+  - type: entities
+    title: "KidsChores"
+    show_header_toggle: false
+    entities:
+      - type: custom:mushroom-template-card
+        primary: "Open KidsChores"
+        secondary: "View chores and progress"
+        icon: mdi:checkbox-marked-circle
+        icon_color: green
+        tap_action:
+          action: navigate
+          navigation_path: /kidschores
+    # Add your KidsChores entities here, e.g.:
+    # - entity: sensor.kidschores_child1_points
+    #   name: "Child 1 Points"
+    # - entity: sensor.kidschores_child2_points
+    #   name: "Child 2 Points"
+
+  # ── Google Calendar — Upcoming Events ──────────────────────
+  # CUSTOMIZE: Update with your actual calendar entity IDs
+  # Check Settings > Entities and filter by "calendar"
+  - type: calendar
+    title: Family Calendar
+    initial_view: listWeek
+    entities:
+      - calendar.family
+      - calendar.personal
+      # Add more of your 19 Google calendars as needed
+      # - calendar.work
+      # - calendar.kids_activities
+
+  # ── Laundry Calendar ───────────────────────────────────────
+  - type: calendar
+    title: Laundry Schedule
+    initial_view: listWeek
+    entities:
+      - calendar.laundry
+
+  # ── Mail & Packages ────────────────────────────────────────
+  # CUSTOMIZE: Update Mail and Packages entity IDs
+  - type: conditional
+    conditions:
+      - entity: sensor.mail_packages_in_transit
+        state_not: '0'
+    card:
+      type: entities
+      title: "Mail & Packages"
+      show_header_toggle: false
+      entities:
+        - entity: sensor.mail_usps_mail
+          name: "USPS Mail Today"
+          icon: mdi:email
+        - entity: sensor.mail_usps_packages
+          name: "USPS Packages"
+          icon: mdi:package-variant
+        - entity: sensor.mail_packages_in_transit
+          name: "In Transit"
+          icon: mdi:truck-delivery
+
+  # ── Flight Tracking ────────────────────────────────────────
+  # CUSTOMIZE: Update Flightradar24 entity ID
+  - type: custom:mushroom-template-card
+    primary: "Flights Nearby"
+    secondary: >-
+      {{ states('sensor.flightradar24_current_in_area') | default('0') }} aircraft in area
+    icon: mdi:airplane-search
+    icon_color: blue
+    tap_action:
+      action: more-info
+      entity: sensor.flightradar24_current_in_area
+

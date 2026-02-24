@@ -1,0 +1,155 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 4: LIGHTS
+# ════════════════════════════════════════════════════════════════
+title: Lights
+path: lights
+icon: mdi:lightbulb-group
+badges: []
+cards:
+  # ── Lights Header ──────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Lighting"
+    secondary: "{{ states('sensor.total_lights_on') }} lights currently on"
+    icon: mdi:lightbulb-group
+    icon_color: amber
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #78350f 0%, #92400e 50%, #b45309 100%);
+          --primary-text-color: #fef3c7;
+          --secondary-text-color: #fde68a;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(253, 230, 138, 0.2) !important;
+          --icon-color: #fde68a !important;
+        }
+
+  # ── Bedroom Lights (Wyze Lamps) ────────────────────────────
+  # CUSTOMIZE: Update light entity IDs from Settings > Entities
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-light-card
+        entity: light.lamp_1
+        name: Bedroom Lamp 1
+        icon: mdi:lamp
+        show_brightness_control: true
+        show_color_temp_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+      - type: custom:mushroom-light-card
+        entity: light.lamp_2
+        name: Bedroom Lamp 2
+        icon: mdi:lamp
+        show_brightness_control: true
+        show_color_temp_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-light-card
+        entity: light.lamp_3
+        name: Bedroom 2 Lamp
+        icon: mdi:lamp
+        show_brightness_control: true
+        show_color_temp_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+      - type: custom:mushroom-light-card
+        entity: light.lamp_4
+        name: Bedroom 3 Lamp
+        icon: mdi:lamp
+        show_brightness_control: true
+        show_color_temp_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+  # ── Light Strip (Wyze) ─────────────────────────────────────
+  - type: custom:mushroom-light-card
+    entity: light.light_strip_1
+    name: Light Strip
+    icon: mdi:led-strip-variant
+    show_brightness_control: true
+    show_color_control: true
+    use_light_color: true
+    fill_container: true
+    collapsible_controls: true
+
+  # ── Sengled Bulbs (ZHA) ────────────────────────────────────
+  # CUSTOMIZE: Update Sengled entity IDs from Settings > Entities
+  - type: grid
+    columns: 3
+    square: false
+    cards:
+      - type: custom:mushroom-light-card
+        entity: light.sengled_e11_g13_light
+        name: Sengled 1
+        icon: mdi:lightbulb
+        show_brightness_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+      - type: custom:mushroom-light-card
+        entity: light.sengled_e11_g13_light_2
+        name: Sengled 2
+        icon: mdi:lightbulb
+        show_brightness_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+      - type: custom:mushroom-light-card
+        entity: light.sengled_e11_g13_light_3
+        name: Sengled 3
+        icon: mdi:lightbulb
+        show_brightness_control: true
+        use_light_color: true
+        fill_container: true
+        collapsible_controls: true
+
+  # ── Outdoor Lighting (Wyze Plugs) ──────────────────────────
+  # CUSTOMIZE: String lights and outdoor plugs from Wyze
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: switch.string_lights
+        name: String Lights
+        icon: mdi:string-lights
+        tap_action:
+          action: toggle
+        icon_color: amber
+        fill_container: true
+      - type: custom:mushroom-entity-card
+        entity: switch.outdoor_plug
+        name: Outdoor Plug
+        icon: mdi:power-plug
+        tap_action:
+          action: toggle
+        icon_color: cyan
+        fill_container: true
+
+  # ── All Lights Off ─────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "All Lights Off"
+    secondary: "Turn off every light in the house"
+    icon: mdi:lightbulb-off
+    icon_color: red
+    tap_action:
+      action: call-service
+      service: light.turn_off
+      target:
+        entity_id: all
+    card_mod:
+      style: |
+        ha-card { border: 1px solid rgba(239, 68, 68, 0.3); }
+

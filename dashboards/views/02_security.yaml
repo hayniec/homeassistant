@@ -1,0 +1,146 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 2: SECURITY
+# ════════════════════════════════════════════════════════════════
+title: Security
+path: security
+icon: mdi:shield-home
+badges: []
+cards:
+  # ── Security Header ────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Security"
+    secondary: >-
+      {% set alarm = states('alarm_control_panel.alarm_com') | replace('_', ' ') | title %}
+      Alarm: {{ alarm }}
+      · {% set l1 = states('lock.aqara_smart_lock_u100') %}
+      {% set l2 = states('lock.aqara_smart_lock_u100_2') %}
+      {% if l1 == 'locked' and l2 == 'locked' %}All locked
+      {% else %}Unlocked doors{% endif %}
+    icon: mdi:shield-home
+    icon_color: green
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #064e3b 0%, #065f46 50%, #047857 100%);
+          --primary-text-color: #d1fae5;
+          --secondary-text-color: #a7f3d0;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(167, 243, 208, 0.2) !important;
+          --icon-color: #a7f3d0 !important;
+        }
+
+  # ── Alarm Panel ────────────────────────────────────────────
+  # CUSTOMIZE: Update alarm entity if different
+  - type: alarm-panel
+    entity: alarm_control_panel.alarm_com
+    states:
+      - arm_home
+      - arm_away
+      - arm_night
+
+  # ── Door Locks ─────────────────────────────────────────────
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      # CUSTOMIZE: Update lock entity IDs from Settings > Entities
+      - type: custom:mushroom-lock-card
+        entity: lock.aqara_smart_lock_u100
+        name: Front Door Lock
+        fill_container: true
+      - type: custom:mushroom-lock-card
+        entity: lock.aqara_smart_lock_u100_2
+        name: Back Door Lock
+        fill_container: true
+
+  # ── Lock Batteries ─────────────────────────────────────────
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      # CUSTOMIZE: Update battery sensor entity IDs
+      - type: custom:mushroom-template-card
+        primary: "Front Lock Battery"
+        secondary: >-
+          {{ states('sensor.aqara_smart_lock_u100_battery') }}%
+        icon: mdi:battery
+        icon_color: >-
+          {% set b = states('sensor.aqara_smart_lock_u100_battery') | int(0) %}
+          {% if b > 50 %}green{% elif b > 20 %}orange{% else %}red{% endif %}
+      - type: custom:mushroom-template-card
+        primary: "Back Lock Battery"
+        secondary: >-
+          {{ states('sensor.aqara_smart_lock_u100_2_battery') }}%
+        icon: mdi:battery
+        icon_color: >-
+          {% set b = states('sensor.aqara_smart_lock_u100_2_battery') | int(0) %}
+          {% if b > 50 %}green{% elif b > 20 %}orange{% else %}red{% endif %}
+
+  # ── Smoke / CO Alarm ───────────────────────────────────────
+  # CUSTOMIZE: Update ZCombo-G entity ID
+  - type: custom:mushroom-entity-card
+    entity: binary_sensor.zcombo_g_smoke_and_co_detector
+    name: "Smoke / CO Alarm"
+    icon: mdi:smoke-detector-variant
+    fill_container: true
+
+  # ── Wyze Camera Grid ───────────────────────────────────────
+  # CUSTOMIZE: Update camera entity IDs from Settings > Entities
+  - type: custom:swipe-card
+    parameters:
+      spaceBetween: 8
+      watchSlidesProgress: true
+    cards:
+      - type: picture-entity
+        entity: camera.front_yard_cam
+        name: Front Yard
+        show_name: true
+        show_state: false
+        camera_view: auto
+      - type: picture-entity
+        entity: camera.driveway_cam
+        name: Driveway
+        show_name: true
+        show_state: false
+        camera_view: auto
+      - type: picture-entity
+        entity: camera.garage_cam
+        name: Garage
+        show_name: true
+        show_state: false
+        camera_view: auto
+      - type: picture-entity
+        entity: camera.sideyard_cam
+        name: Sideyard
+        show_name: true
+        show_state: false
+        camera_view: auto
+      - type: picture-entity
+        entity: camera.baby_cam
+        name: Baby Cam
+        show_name: true
+        show_state: false
+        camera_view: auto
+
+  # ── UniFi Protect Cameras (if installed) ───────────────────
+  # CUSTOMIZE: Add your UniFi Protect camera entities below.
+  # After adding UniFi Protect integration, cameras appear as
+  # camera.unifi_protect_<name>. Uncomment and update:
+  #
+  # - type: grid
+  #   columns: 2
+  #   square: false
+  #   cards:
+  #     - type: picture-entity
+  #       entity: camera.unifi_front_door
+  #       name: UniFi Front Door
+  #       show_name: true
+  #       camera_view: auto
+  #     - type: picture-entity
+  #       entity: camera.unifi_backyard
+  #       name: UniFi Backyard
+  #       show_name: true
+  #       camera_view: auto
+

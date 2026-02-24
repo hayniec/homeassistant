@@ -1,0 +1,145 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 7: NETWORK
+# ════════════════════════════════════════════════════════════════
+title: Network
+path: network
+icon: mdi:lan
+badges: []
+cards:
+  # ── Network Header ─────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Network"
+    secondary: "UniFi & System Health"
+    icon: mdi:lan
+    icon_color: cyan
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #0c4a6e 0%, #075985 50%, #0369a1 100%);
+          --primary-text-color: #e0f2fe;
+          --secondary-text-color: #bae6fd;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(186, 230, 253, 0.2) !important;
+          --icon-color: #bae6fd !important;
+        }
+
+  # ── UniFi Network Status ───────────────────────────────────
+  # CUSTOMIZE: After adding UniFi Network integration, update
+  # these entity IDs. Check Settings > Entities, filter "unifi".
+  #
+  # UniFi Network creates entities like:
+  #   sensor.unifi_gateway_wan_download (WAN download speed)
+  #   sensor.unifi_gateway_wan_upload (WAN upload speed)
+  #   sensor.unifi_gateway_wan_ip (WAN IP)
+  #   sensor.unifi_default_clients (connected clients)
+  #   update.unifi_network_* (firmware updates)
+  #
+  # Replace placeholder entities below with your actual UniFi entities:
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: "WAN Download"
+        secondary: >-
+          {{ states('sensor.unifi_gateway_wan_download') | default('N/A') }} Mbps
+        icon: mdi:download
+        icon_color: green
+      - type: custom:mushroom-template-card
+        primary: "WAN Upload"
+        secondary: >-
+          {{ states('sensor.unifi_gateway_wan_upload') | default('N/A') }} Mbps
+        icon: mdi:upload
+        icon_color: blue
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-template-card
+        primary: "WAN IP"
+        secondary: >-
+          {{ states('sensor.unifi_gateway_wan_ip') | default('N/A') }}
+        icon: mdi:ip-network
+        icon_color: purple
+      - type: custom:mushroom-template-card
+        primary: "Clients"
+        secondary: >-
+          {{ states('sensor.unifi_default_clients') | default('N/A') }} connected
+        icon: mdi:devices
+        icon_color: cyan
+
+  # ── UniFi Firmware Updates ─────────────────────────────────
+  # CUSTOMIZE: Uncomment and update with your UniFi update entities
+  # - type: entities
+  #   title: "UniFi Updates"
+  #   show_header_toggle: false
+  #   entities:
+  #     - entity: update.unifi_network_application
+  #       name: "Network Controller"
+  #     - entity: update.unifi_dream_machine
+  #       name: "Dream Machine"
+  #     - entity: update.unifi_access_point
+  #       name: "Access Point"
+
+  # ── System Health ──────────────────────────────────────────
+  - type: custom:mini-graph-card
+    name: CPU Usage
+    icon: mdi:chip
+    entities:
+      - entity: sensor.processor_use_percent
+        name: CPU
+        color: "#818cf8"
+    hours_to_show: 6
+    line_width: 2
+    font_size: 75
+    animate: true
+    show:
+      labels: true
+      fill: fade
+
+  - type: custom:mini-graph-card
+    name: Memory Usage
+    icon: mdi:memory
+    entities:
+      - entity: sensor.memory_use_percent
+        name: Memory
+        color: "#f472b6"
+    hours_to_show: 6
+    line_width: 2
+    font_size: 75
+    animate: true
+    show:
+      labels: true
+      fill: fade
+
+  - type: custom:mini-graph-card
+    name: Disk Usage
+    icon: mdi:harddisk
+    entities:
+      - entity: sensor.disk_use_percent
+        name: Disk
+        color: "#4ade80"
+    hours_to_show: 24
+    line_width: 2
+    font_size: 75
+    animate: true
+    show:
+      labels: true
+      fill: fade
+
+  # ── Printer Status ─────────────────────────────────────────
+  # CUSTOMIZE: Update Brother printer entity IDs
+  - type: custom:mushroom-template-card
+    primary: "Printer"
+    secondary: >-
+      {{ states('sensor.brother_mfc_l3780cdw_status') | default('Unknown') }}
+    icon: mdi:printer
+    icon_color: grey
+    tap_action:
+      action: more-info
+      entity: sensor.brother_mfc_l3780cdw_status
+

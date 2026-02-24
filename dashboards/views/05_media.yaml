@@ -1,0 +1,113 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 5: MEDIA
+# ════════════════════════════════════════════════════════════════
+title: Media
+path: media
+icon: mdi:play-circle
+badges: []
+cards:
+  # ── Media Header ───────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Media"
+    secondary: "{{ states('sensor.active_media_players') }} devices playing"
+    icon: mdi:play-circle
+    icon_color: pink
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #831843 0%, #9d174d 50%, #be185d 100%);
+          --primary-text-color: #fce7f3;
+          --secondary-text-color: #fbcfe8;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(251, 207, 232, 0.2) !important;
+          --icon-color: #fbcfe8 !important;
+        }
+
+  # ── YouTube Music ──────────────────────────────────────────
+  - type: custom:mini-media-player
+    entity: media_player.ytube_music_player
+    name: YouTube Music
+    artwork: cover
+    source: icon
+    info: scroll
+    volume_stateless: false
+    toggle_power: true
+    hide:
+      shuffle: false
+      icon: false
+
+  # ── Plex Server ────────────────────────────────────────────
+  # CUSTOMIZE: Update Plex entity ID (check Settings > Entities for "plex")
+  - type: custom:mini-media-player
+    entity: media_player.plex_zauruspplex
+    name: Plex (ZaurusPlex)
+    artwork: cover
+    source: icon
+    info: scroll
+    volume_stateless: false
+    toggle_power: true
+    hide:
+      shuffle: true
+      icon: false
+
+  # ── Google Cast Devices ────────────────────────────────────
+  # CUSTOMIZE: Update these with your actual Google Cast entity IDs.
+  # Check Settings > Entities and filter by "media_player" to find them.
+  # Common names: media_player.living_room_tv, media_player.bedroom_speaker, etc.
+  - type: custom:mini-media-player
+    entity: media_player.living_room_tv
+    name: Living Room TV
+    artwork: cover
+    source: icon
+    info: scroll
+    toggle_power: true
+    hide:
+      shuffle: true
+      icon: false
+
+  - type: custom:mini-media-player
+    entity: media_player.bedroom_speaker
+    name: Bedroom Speaker
+    artwork: cover
+    source: icon
+    info: scroll
+    toggle_power: true
+    hide:
+      shuffle: true
+      icon: false
+
+  - type: custom:mini-media-player
+    entity: media_player.kitchen_speaker
+    name: Kitchen Speaker
+    artwork: cover
+    source: icon
+    info: scroll
+    toggle_power: true
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mini-media-player
+        entity: media_player.office_speaker
+        name: Office
+        artwork: cover
+        info: scroll
+        toggle_power: true
+        hide:
+          volume: true
+          icon: false
+      # CUSTOMIZE: Add more Cast devices as needed
+      # - type: custom:mini-media-player
+      #   entity: media_player.movie_area_chromecast
+      #   name: Movie Area
+      #   artwork: cover
+      #   info: scroll
+      #   toggle_power: true
+
+  # ── Media Browser ──────────────────────────────────────────
+  - type: media-control
+    entity: media_player.living_room_tv
+

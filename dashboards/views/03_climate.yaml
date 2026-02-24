@@ -1,0 +1,108 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 3: CLIMATE
+# ════════════════════════════════════════════════════════════════
+title: Climate
+path: climate
+icon: mdi:thermostat
+badges: []
+cards:
+  # ── Climate Header ─────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Climate Control"
+    secondary: >-
+      Outside: {{ state_attr('weather.forecast_home', 'temperature') }}°F
+      · {{ state_attr('weather.forecast_home', 'humidity') }}% humidity
+    icon: mdi:thermostat
+    icon_color: orange
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #7c2d12 0%, #9a3412 50%, #c2410c 100%);
+          --primary-text-color: #ffedd5;
+          --secondary-text-color: #fed7aa;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(254, 215, 170, 0.2) !important;
+          --icon-color: #fed7aa !important;
+        }
+
+  # ── Upstairs Thermostat (Living Room — ADC-T 3000) ─────────
+  # CUSTOMIZE: Update thermostat entity ID
+  - type: custom:mushroom-climate-card
+    entity: climate.upstairs_thermostat
+    name: Upstairs Thermostat
+    icon: mdi:thermostat
+    show_temperature_control: true
+    hvac_modes:
+      - "off"
+      - heat
+      - cool
+      - heat_cool
+      - auto
+    fill_container: true
+    collapsible_controls: true
+
+  # ── Basement Thermostat (ADC-T 3000) ───────────────────────
+  # CUSTOMIZE: Update thermostat entity ID
+  - type: custom:mushroom-climate-card
+    entity: climate.basement_thermostat
+    name: Basement Thermostat
+    icon: mdi:thermostat
+    show_temperature_control: true
+    hvac_modes:
+      - "off"
+      - heat
+      - cool
+      - heat_cool
+      - auto
+    fill_container: true
+    collapsible_controls: true
+
+  # ── Temperature Comparison Graph ───────────────────────────
+  - type: custom:mini-graph-card
+    name: Temperature Trend
+    icon: mdi:home-thermometer
+    entities:
+      - entity: climate.upstairs_thermostat
+        attribute: current_temperature
+        name: Upstairs
+        color: "#f97316"
+      - entity: climate.basement_thermostat
+        attribute: current_temperature
+        name: Basement
+        color: "#818cf8"
+      - entity: weather.forecast_home
+        attribute: temperature
+        name: Outside
+        color: "#38bdf8"
+    hours_to_show: 24
+    points_per_hour: 2
+    line_width: 2
+    font_size: 75
+    animate: true
+    show:
+      labels: true
+      legend: true
+      fill: fade
+
+  # ── Dreo Fan / Heater ──────────────────────────────────────
+  # CUSTOMIZE: Update Dreo entity IDs from Settings > Entities
+  # Dreo devices may appear as fan.dreo_<name> or climate.dreo_<name>
+  - type: custom:mushroom-fan-card
+    entity: fan.dreo_fan
+    name: Dreo Fan
+    icon: mdi:fan
+    show_percentage_control: true
+    show_oscillate_control: true
+    fill_container: true
+    collapsible_controls: true
+
+  # ── Humidity ───────────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Humidity"
+    secondary: >-
+      Outdoor: {{ state_attr('weather.forecast_home', 'humidity') }}%
+    icon: mdi:water-percent
+    icon_color: blue
+

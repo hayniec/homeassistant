@@ -1,0 +1,212 @@
+# ════════════════════════════════════════════════════════════════
+#  VIEW 1: HOME OVERVIEW
+# ════════════════════════════════════════════════════════════════
+title: Home
+path: home
+icon: mdi:home
+badges: []
+cards:
+  # ── Welcome Banner ─────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "{{ states('sensor.greeting') }}"
+    secondary: >-
+      {{ now().strftime('%A, %B %-d') }} · {{ states('sensor.house_status') }}
+    icon: mdi:home-heart
+    icon_color: indigo
+    card_mod:
+      style: |
+        ha-card {
+          background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #4338ca 100%);
+          --primary-text-color: #e2e8f0;
+          --secondary-text-color: #c7d2fe;
+          padding: 8px;
+        }
+        mushroom-shape-icon {
+          --shape-color: rgba(199, 210, 254, 0.2) !important;
+          --icon-color: #c7d2fe !important;
+        }
+
+  # ── Quick Status Chips ─────────────────────────────────────
+  - type: custom:mushroom-chips-card
+    alignment: center
+    chips:
+      - type: entity
+        entity: input_select.house_mode
+        icon: mdi:home-variant
+        tap_action:
+          action: more-info
+      - type: entity
+        entity: sensor.total_lights_on
+        icon: mdi:lightbulb-group
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-main/lights
+      - type: entity
+        entity: sensor.active_media_players
+        icon: mdi:speaker
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-main/media
+      - type: weather
+        entity: weather.forecast_home
+        show_temperature: true
+        show_conditions: true
+      - type: template
+        icon: mdi:shield-home
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-main/security
+        # CUSTOMIZE: Update alarm entity if different
+        entity: alarm_control_panel.alarm_com
+        icon_color: >-
+          {% set state = states('alarm_control_panel.alarm_com') %}
+          {% if state == 'armed_away' %}red
+          {% elif state == 'armed_home' %}orange
+          {% elif state == 'armed_night' %}purple
+          {% else %}green{% endif %}
+
+  # ── Weather Forecast ───────────────────────────────────────
+  - type: weather-forecast
+    entity: weather.forecast_home
+    show_forecast: true
+    forecast_type: daily
+    card_mod:
+      style: |
+        ha-card { border-radius: 16px; }
+
+  # ── Commute & Travel ───────────────────────────────────────
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      # CUSTOMIZE: Update waze entity ID
+      - type: custom:mushroom-template-card
+        primary: "Commute"
+        secondary: >-
+          {{ states('sensor.waze_travel_time') }} min
+        icon: mdi:car
+        icon_color: >-
+          {% set t = states('sensor.waze_travel_time') | float(0) %}
+          {% if t < 30 %}green{% elif t < 50 %}orange{% else %}red{% endif %}
+        tap_action:
+          action: more-info
+          entity: sensor.waze_travel_time
+      # CUSTOMIZE: Update FAA entity ID (check Settings > Entities)
+      - type: custom:mushroom-template-card
+        primary: "ATL Airport"
+        secondary: >-
+          {% if is_state('binary_sensor.atl', 'on') %}
+            Delays reported
+          {% else %}
+            No delays
+          {% endif %}
+        icon: mdi:airplane
+        icon_color: >-
+          {% if is_state('binary_sensor.atl', 'on') %}red{% else %}green{% endif %}
+        tap_action:
+          action: more-info
+          entity: binary_sensor.atl
+
+  # ── Quick Glance Cards ─────────────────────────────────────
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      # Lock Status
+      - type: custom:mushroom-template-card
+        primary: "Locks"
+        secondary: >-
+          {{ states('sensor.lock_status') }}
+        icon: >-
+          {% set l1 = states('lock.aqara_smart_lock_u100') %}
+          {% set l2 = states('lock.aqara_smart_lock_u100_2') %}
+          {{ 'mdi:lock' if l1 == 'locked' and l2 == 'locked' else 'mdi:lock-open-variant' }}
+        icon_color: >-
+          {% set l1 = states('lock.aqara_smart_lock_u100') %}
+          {% set l2 = states('lock.aqara_smart_lock_u100_2') %}
+          {{ 'green' if l1 == 'locked' and l2 == 'locked' else 'red' }}
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-main/security
+      # Thermostat Summary
+      - type: custom:mushroom-template-card
+        primary: "Climate"
+        secondary: >-
+          {{ state_attr('climate.upstairs_thermostat', 'current_temperature') | round(0) }}°F upstairs
+        icon: mdi:thermostat
+        icon_color: orange
+        tap_action:
+          action: navigate
+          navigation_path: /dashboard-main/climate
+
+  # ── Mail & Packages ────────────────────────────────────────
+  # CUSTOMIZE: Check your mail_and_packages entity IDs
+  - type: conditional
+    conditions:
+      - entity: sensor.mail_packages_in_transit
+        state_not: '0'
+    card:
+      type: custom:mushroom-template-card
+      primary: "Mail & Packages"
+      secondary: >-
+        {{ states('sensor.mail_usps_mail') | default('0') }} mail
+        · {{ states('sensor.mail_packages_in_transit') | default('0') }} packages in transit
+      icon: mdi:mailbox
+      icon_color: brown
+      tap_action:
+        action: navigate
+        navigation_path: /dashboard-main/family
+
+  # ── Sun Position ───────────────────────────────────────────
+  - type: custom:mushroom-template-card
+    primary: "Sun"
+    secondary: >-
+      Rise: {{ as_timestamp(state_attr('sun.sun', 'next_rising')) | timestamp_custom('%I:%M %p') }}
+      · Set: {{ as_timestamp(state_attr('sun.sun', 'next_setting')) | timestamp_custom('%I:%M %p') }}
+    icon: >-
+      {{ 'mdi:weather-sunny' if is_state('sun.sun', 'above_horizon') else 'mdi:weather-night' }}
+    icon_color: >-
+      {{ 'amber' if is_state('sun.sun', 'above_horizon') else 'indigo' }}
+
+  # ── House Mode & Quick Toggles ─────────────────────────────
+  - type: custom:mushroom-select-card
+    entity: input_select.house_mode
+    icon: mdi:home-variant
+    fill_container: true
+    card_mod:
+      style: |
+        ha-card { border-left: 3px solid #818cf8; }
+
+  - type: grid
+    columns: 2
+    square: false
+    cards:
+      - type: custom:mushroom-entity-card
+        entity: input_boolean.guest_mode
+        icon: mdi:account-group
+        tap_action:
+          action: toggle
+        icon_color: amber
+        fill_container: true
+      - type: custom:mushroom-entity-card
+        entity: input_boolean.vacation_mode
+        icon: mdi:airplane
+        tap_action:
+          action: toggle
+        icon_color: blue
+        fill_container: true
+      - type: custom:mushroom-entity-card
+        entity: input_boolean.do_not_disturb
+        icon: mdi:bell-off
+        tap_action:
+          action: toggle
+        icon_color: red
+        fill_container: true
+      - type: custom:mushroom-entity-card
+        entity: input_boolean.good_night
+        icon: mdi:weather-night
+        tap_action:
+          action: toggle
+        icon_color: deep-purple
+        fill_container: true
+
