@@ -1,16 +1,75 @@
 # Entity Customizations
-# Add friendly names, icons, and other customizations here
+# https://www.home-assistant.io/docs/configuration/customizing-devices/
+# CUSTOMIZE: Update entity IDs to match your actual devices
 
-# Example customizations (uncomment and modify for your entities):
+# ── Wyze Lamps ──────────────────────────────────────
+light.lamp_1:
+  friendly_name: "Bedroom Lamp 1"
+  icon: mdi:lamp
 
-# light.living_room:
-#   friendly_name: "Living Room Light"
-#   icon: mdi:ceiling-light
+light.lamp_2:
+  friendly_name: "Bedroom Lamp 2"
+  icon: mdi:lamp
 
-# light.bedroom:
-#   friendly_name: "Bedroom Light"
-#   icon: mdi:lamp
+light.lamp_3:
+  friendly_name: "Bedroom 2 Lamp"
+  icon: mdi:lamp
 
-# sensor.temperature:
-#   friendly_name: "Indoor Temperature"
-#   icon: mdi:thermometer
+light.lamp_4:
+  friendly_name: "Bedroom 3 Lamp"
+  icon: mdi:lamp
+
+light.light_strip_1:
+  friendly_name: "Light Strip"
+  icon: mdi:led-strip-variant
+
+# ── Sengled Bulbs (ZHA) ─────────────────────────────
+light.sengled_e11_g13_light:
+  friendly_name: "Sengled Bulb 1"
+  icon: mdi:lightbulb
+
+light.sengled_e11_g13_light_2:
+  friendly_name: "Sengled Bulb 2"
+  icon: mdi:lightbulb
+
+light.sengled_e11_g13_light_3:
+  friendly_name: "Sengled Bulb 3"
+  icon: mdi:lightbulb
+
+# ── Wyze Plugs/Switches ─────────────────────────────
+switch.string_lights:
+  friendly_name: "Backyard String Lights"
+  icon: mdi:string-lights
+
+switch.outdoor_plug:
+  friendly_name: "Outdoor Plug"
+  icon: mdi:power-plug
+
+switch.wyze_plug_outdoor:
+  friendly_name: "Wyze Outdoor Plug"
+  icon: mdi:power-plug-outline
+
+# ── Aqara Locks ──────────────────────────────────────
+lock.aqara_smart_lock_u100:
+  friendly_name: "Front Door Lock"
+  icon: mdi:lock
+
+lock.aqara_smart_lock_u100_2:
+  friendly_name: "Back Door Lock"
+  icon: mdi:lock
+
+# ── Wyze Cameras ─────────────────────────────────────
+camera.front_yard_cam:
+  friendly_name: "Front Yard Camera"
+
+camera.driveway_cam:
+  friendly_name: "Driveway Camera"
+
+camera.garage_cam:
+  friendly_name: "Garage Camera"
+
+camera.sideyard_cam:
+  friendly_name: "Sideyard Camera"
+
+camera.baby_cam:
+  friendly_name: "Baby Camera"

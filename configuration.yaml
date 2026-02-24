@@ -21,7 +21,7 @@ tts:
 frontend:
   themes: !include_dir_merge_named themes/
 
-# Lovelace Dashboards
+# Lovelace Dashboards (YAML mode)
 lovelace:
   mode: yaml
   resources:
@@ -54,7 +54,7 @@ lovelace:
       icon: mdi:view-dashboard
       show_in_sidebar: true
 
-# Weather
+# Weather (Met.no configured via UI)
 weather:
 
 # Recorder & History
@@ -66,7 +66,9 @@ history:
 
 logbook:
 
-# Input helpers
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Input Helpers — House Modes & Toggles
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 input_boolean:
   guest_mode:
     name: Guest Mode
@@ -93,19 +95,44 @@ input_select:
     initial: Home
     icon: mdi:home-variant
 
-# Sensors
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Integration Notes (configured via Settings > Integrations UI)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+# Alarm.com          — Security system (alarm_control_panel.alarm_com)
+# Aqara / Matter     — 2x U100 Smart Locks via Aqara Hub M3
+# Brother IPP        — MFC-L3780CDW printer
+# Dreo               — Smart fans/heaters
+# FAA Delays         — ATL airport
+# Flightradar24      — Flight tracking
+# Google Calendar    — 19 calendars
+# Google Cast        — 20+ Chromecast/Home/Nest devices
+# Google TTS         — Text-to-speech
+# Google Home        — Google Home integration
+# HomeKit Device     — Aqara Hub M3
+# KidsChores (HACS)  — Chore tracker (154 entities)
+# Local Calendar     — Laundry schedule
+# Mail & Packages    — USPS tracking
+# Matter             — Aqara Hub M3 + 2x U100 locks
+# Met.no             — Weather (weather.forecast_home)
+# MQTT / Mosquitto   — Broker for Zigbee2mqtt
+# Plex               — ZaurusPlex media server + clients
+# Radio Browser      — Internet radio directory
+# Shopping List      — Built-in shopping list
+# Sun                — Solar position (sun.sun)
+# UniFi Network      — Add via Settings > Integrations > UniFi Network
+# UniFi Protect      — Add via Settings > Integrations > UniFi Protect (if you have NVR)
+# Waze Travel Time   — Commute tracking
+# Wyze (HACS)        — 5 cameras, 4 lamps, light strip, plugs
+# ytube_music_player — YouTube Music
+# Z-Wave JS          — 2x ADC-T 3000 thermostats, ZCombo-G smoke/CO, HUSBZB-1
+# ZHA                — 3x Sengled E11-G13 bulbs via HUSBZB-1
+# Zigbee2mqtt        — Zigbee devices via Mosquitto
+
+# Includes
 sensor: !include sensors.yaml
-
-# Automations
 automation: !include automations.yaml
-
-# Scripts
 script: !include scripts.yaml
-
-# Scenes
 scene: !include scenes.yaml
-
-# Groups
 group: !include groups.yaml
 
 # Shell commands

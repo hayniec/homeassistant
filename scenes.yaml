@@ -1,38 +1,78 @@
 # Scenes
 # https://www.home-assistant.io/integrations/scene/
+# CUSTOMIZE: Update entity IDs to match your actual devices
 
-# - name: Movie Night
-#   icon: mdi:movie-open
-#   entities:
-#     light.living_room:
-#       state: "on"
-#       brightness: 50
-#       color_temp: 400
-#     light.kitchen:
-#       state: "off"
-#     media_player.living_room:
-#       state: "on"
+- name: Movie Night
+  icon: mdi:movie-open
+  entities:
+    light.lamp_1:
+      state: "off"
+    light.lamp_2:
+      state: "off"
+    light.light_strip_1:
+      state: "on"
+      brightness: 30
+    light.sengled_e11_g13_light:
+      state: "off"
 
-# - name: Morning Routine
-#   icon: mdi:weather-sunny
-#   entities:
-#     light.kitchen:
-#       state: "on"
-#       brightness: 255
-#       color_temp: 250
-#     light.bedroom:
-#       state: "on"
-#       brightness: 128
-#       color_temp: 300
+- name: Morning Routine
+  icon: mdi:weather-sunny
+  entities:
+    light.lamp_1:
+      state: "on"
+      brightness: 255
+    light.lamp_2:
+      state: "on"
+      brightness: 255
+    light.sengled_e11_g13_light:
+      state: "on"
+      brightness: 200
 
-# - name: Good Night
-#   icon: mdi:weather-night
-#   entities:
-#     light.living_room:
-#       state: "off"
-#     light.kitchen:
-#       state: "off"
-#     light.bedroom:
-#       state: "on"
-#       brightness: 30
-#       color_temp: 450
+- name: Good Night
+  icon: mdi:weather-night
+  entities:
+    light.lamp_1:
+      state: "on"
+      brightness: 20
+    light.lamp_2:
+      state: "off"
+    light.lamp_3:
+      state: "off"
+    light.lamp_4:
+      state: "off"
+    light.light_strip_1:
+      state: "off"
+    light.sengled_e11_g13_light:
+      state: "off"
+    light.sengled_e11_g13_light_2:
+      state: "off"
+    light.sengled_e11_g13_light_3:
+      state: "off"
+
+- name: All Bright
+  icon: mdi:lightbulb-on
+  entities:
+    light.lamp_1:
+      state: "on"
+      brightness: 255
+    light.lamp_2:
+      state: "on"
+      brightness: 255
+    light.lamp_3:
+      state: "on"
+      brightness: 255
+    light.lamp_4:
+      state: "on"
+      brightness: 255
+    light.light_strip_1:
+      state: "on"
+      brightness: 255
+    light.sengled_e11_g13_light:
+      state: "on"
+      brightness: 255
+    light.sengled_e11_g13_light_2:
+      state: "on"
+      brightness: 255
+    light.sengled_e11_g13_light_3:
+      state: "on"
+      brightness: 255

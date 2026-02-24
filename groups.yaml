@@ -1,25 +1,51 @@
 # Groups
 # https://www.home-assistant.io/integrations/group/
+# CUSTOMIZE: Update entity IDs to match your actual devices
 
-# all_lights:
-#   name: All Lights
-#   entities:
-#     - light.living_room
-#     - light.bedroom
-#     - light.kitchen
-#     - light.bathroom
-#     - light.office
+# ── All Lights ──────────────────────────────────────
+all_lights:
+  name: All Lights
+  entities:
+    # Wyze Lamps
+    - light.lamp_1
+    - light.lamp_2
+    - light.lamp_3
+    - light.lamp_4
+    # Wyze Light Strip
+    - light.light_strip_1
+    # Sengled (ZHA)
+    - light.sengled_e11_g13_light
+    - light.sengled_e11_g13_light_2
+    - light.sengled_e11_g13_light_3
 
-# downstairs_lights:
-#   name: Downstairs Lights
-#   entities:
-#     - light.living_room
-#     - light.kitchen
-#     - light.dining_room
+# ── Bedroom Lights ──────────────────────────────────
+bedroom_lights:
+  name: Bedroom Lights
+  entities:
+    - light.lamp_1
+    - light.lamp_2
 
-# upstairs_lights:
-#   name: Upstairs Lights
-#   entities:
-#     - light.bedroom
-#     - light.bathroom
-#     - light.office
+# ── All Locks ───────────────────────────────────────
+all_locks:
+  name: All Locks
+  entities:
+    - lock.aqara_smart_lock_u100
+    - lock.aqara_smart_lock_u100_2
+
+# ── Outdoor Devices ─────────────────────────────────
+outdoor_devices:
+  name: Outdoor Devices
+  entities:
+    - switch.string_lights
+    - switch.outdoor_plug
+    - switch.wyze_plug_outdoor
+
+# ── All Cameras ─────────────────────────────────────
+all_cameras:
+  name: All Cameras
+  entities:
+    - camera.front_yard_cam
+    - camera.driveway_cam
+    - camera.garage_cam
+    - camera.sideyard_cam
+    - camera.baby_cam

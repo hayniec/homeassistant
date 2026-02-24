@@ -1,7 +1,12 @@
 # Automations
 # https://www.home-assistant.io/docs/automation/
+#
+# CUSTOMIZE: Entity IDs use best-guess naming from your integrations.
+# Update any entity IDs that don't match your actual devices.
 
-# ── Sunrise / Sunset ─────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Sunrise / Sunset
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - id: sunrise_lights_off
   alias: "Sunrise - Turn Off Night Lights"
   trigger:
@@ -24,16 +29,19 @@
       entity_id: input_select.house_mode
       state: "Home"
   action:
+    # CUSTOMIZE: Update with your actual light entity IDs
     - service: light.turn_on
       target:
         entity_id:
-          - light.living_room
-          - light.kitchen
+          - light.lamp_1
+          - light.lamp_2
+          - light.sengled_e11_g13_light
       data:
         brightness: 180
-        color_temp: 370
 
-# ── Good Night Mode ──────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Good Night Mode
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - id: good_night_automation
   alias: "Good Night - Shut Everything Down"
   trigger:
@@ -47,6 +55,16 @@
     - service: media_player.turn_off
       target:
         entity_id: all
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.string_lights
+          - switch.outdoor_plug
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.aqara_smart_lock_u100
+          - lock.aqara_smart_lock_u100_2
     - service: input_select.select_option
       target:
         entity_id: input_select.house_mode
@@ -57,7 +75,9 @@
       target:
         entity_id: input_boolean.good_night
 
-# ── Vacation Mode ────────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Vacation Mode
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - id: vacation_random_lights
   alias: "Vacation - Random Lights"
   trigger:
@@ -66,21 +86,26 @@
   condition:
     - condition: state
       entity_id: input_boolean.vacation_mode
-      to: "on"
+      state: "on"
     - condition: sun
       after: sunset
       before: sunrise
   action:
+    # CUSTOMIZE: Update with lights you want to randomly toggle
     - service: light.toggle
       target:
-        entity_id: light.living_room
+        entity_id:
+          - light.lamp_1
+          - light.sengled_e11_g13_light
 
-# ── Weather Alerts ───────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Weather Alerts
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - id: severe_weather_alert
   alias: "Weather - Severe Weather Notification"
   trigger:
     - platform: state
-      entity_id: weather.home
+      entity_id: weather.forecast_home
   condition:
     - condition: template
       value_template: >-
@@ -90,15 +115,14 @@
       data:
         title: "Severe Weather Alert"
         message: >-
-          Weather has changed to {{ states('weather.home') | replace('_', ' ') | title }}.
-          Temperature: {{ state_attr('weather.home', 'temperature') }}°
+          Weather has changed to {{ states('weather.forecast_home') | replace('_', ' ') | title }}.
+          Temperature: {{ state_attr('weather.forecast_home', 'temperature') }}°F
 
-# ── Temperature Alert ────────────────────────────────────────────
 - id: high_temperature_alert
   alias: "Climate - High Temperature Alert"
   trigger:
     - platform: numeric_state
-      entity_id: weather.home
+      entity_id: weather.forecast_home
       attribute: temperature
       above: 95
   action:
@@ -107,7 +131,9 @@
         title: "High Temperature Warning"
         message: "Outside temperature has exceeded 95°F!"
 
-# ── Guest Mode ───────────────────────────────────────────────────
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Guest Mode
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 - id: guest_mode_on
   alias: "Guest Mode - Welcome Setup"
   trigger:
@@ -125,3 +151,77 @@
         entity_id: all
       data:
         brightness: 200
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Lock Automations
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- id: lock_at_night
+  alias: "Security - Lock Doors at Night"
+  trigger:
+    - platform: time
+      at: "22:00:00"
+  action:
+    # CUSTOMIZE: Update lock entity IDs if different
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.aqara_smart_lock_u100
+          - lock.aqara_smart_lock_u100_2
+    - service: notify.notify
+      data:
+        title: "Doors Locked"
+        message: "All doors have been locked for the night."
+
+- id: low_lock_battery
+  alias: "Security - Low Lock Battery Alert"
+  trigger:
+    # CUSTOMIZE: Update battery sensor entity IDs
+    - platform: numeric_state
+      entity_id: sensor.aqara_smart_lock_u100_battery
+      below: 20
+    - platform: numeric_state
+      entity_id: sensor.aqara_smart_lock_u100_2_battery
+      below: 20
+  action:
+    - service: notify.notify
+      data:
+        title: "Low Lock Battery"
+        message: >-
+          Lock battery is low: {{ trigger.to_state.name }} at {{ trigger.to_state.state }}%
+
+- id: door_unlocked_alert
+  alias: "Security - Door Unlocked Too Long"
+  trigger:
+    # CUSTOMIZE: Update lock entity IDs if different
+    - platform: state
+      entity_id:
+        - lock.aqara_smart_lock_u100
+        - lock.aqara_smart_lock_u100_2
+      to: "unlocked"
+      for: "00:10:00"
+  action:
+    - service: notify.notify
+      data:
+        title: "Door Unlocked"
+        message: "{{ trigger.to_state.name }} has been unlocked for 10 minutes."
+
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Smoke / CO Alarm
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+- id: smoke_co_alarm
+  alias: "Safety - Smoke/CO Alarm Triggered"
+  trigger:
+    # CUSTOMIZE: Update ZCombo-G entity ID
+    - platform: state
+      entity_id: binary_sensor.zcombo_g_smoke_and_co_detector
+      to: "on"
+  action:
+    - service: notify.notify
+      data:
+        title: "SMOKE/CO ALARM"
+        message: "Smoke or Carbon Monoxide detected! Check immediately."
+    - service: light.turn_on
+      target:
+        entity_id: all
+      data:
+        brightness: 255

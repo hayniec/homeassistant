@@ -1,39 +1,79 @@
 # Scripts
 # https://www.home-assistant.io/integrations/script/
+# CUSTOMIZE: Update entity IDs to match your actual devices
 
-# all_lights_off:
-#   alias: "Turn Off All Lights"
-#   icon: mdi:lightbulb-off
-#   sequence:
-#     - service: light.turn_off
-#       target:
-#         entity_id: all
+# ── Turn Off All Lights ─────────────────────────────
+all_lights_off:
+  alias: "Turn Off All Lights"
+  icon: mdi:lightbulb-off
+  sequence:
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: switch.turn_off
+      target:
+        entity_id:
+          - switch.string_lights
+          - switch.outdoor_plug
 
-# movie_mode:
-#   alias: "Movie Mode"
-#   icon: mdi:movie-open
-#   sequence:
-#     - service: scene.turn_on
-#       target:
-#         entity_id: scene.movie_night
-#     - service: media_player.turn_on
-#       target:
-#         entity_id: media_player.living_room_tv
+# ── Movie Mode ──────────────────────────────────────
+movie_mode:
+  alias: "Movie Mode"
+  icon: mdi:movie-open
+  sequence:
+    - service: light.turn_off
+      target:
+        entity_id: all
+    - service: light.turn_on
+      target:
+        entity_id: light.light_strip_1
+      data:
+        brightness: 30
+    # CUSTOMIZE: Update with your actual TV media_player entity
+    - service: media_player.turn_on
+      target:
+        entity_id: media_player.living_room_tv
 
-# welcome_home:
-#   alias: "Welcome Home"
-#   icon: mdi:home-heart
-#   sequence:
-#     - service: light.turn_on
-#       target:
-#         entity_id:
-#           - light.living_room
-#           - light.hallway
-#       data:
-#         brightness: 200
-#         color_temp: 300
-#     - service: climate.set_temperature
-#       target:
-#         entity_id: climate.thermostat
-#       data:
-#         temperature: 72
+# ── Lock All Doors ──────────────────────────────────
+lock_all_doors:
+  alias: "Lock All Doors"
+  icon: mdi:lock
+  sequence:
+    - service: lock.lock
+      target:
+        entity_id:
+          - lock.aqara_smart_lock_u100
+          - lock.aqara_smart_lock_u100_2
+
+# ── Welcome Home ────────────────────────────────────
+welcome_home:
+  alias: "Welcome Home"
+  icon: mdi:home-heart
+  sequence:
+    - service: light.turn_on
+      target:
+        entity_id:
+          - light.lamp_1
+          - light.lamp_2
+          - light.sengled_e11_g13_light
+      data:
+        brightness: 200
+    - service: lock.unlock
+      target:
+        entity_id: lock.aqara_smart_lock_u100
+    - service: input_select.select_option
+      target:
+        entity_id: input_select.house_mode
+      data:
+        option: "Home"
+
+# ── Outdoor Lights On ──────────────────────────────
+outdoor_lights_on:
+  alias: "Outdoor Lights On"
+  icon: mdi:string-lights
+  sequence:
+    - service: switch.turn_on
+      target:
+        entity_id:
+          - switch.string_lights
+          - switch.outdoor_plug
