@@ -82,7 +82,7 @@
   alias: "Vacation - Random Lights"
   trigger:
     - platform: time_pattern
-      hours: "/1"
+      minutes: "/30"
   condition:
     - condition: state
       entity_id: input_boolean.vacation_mode
@@ -92,11 +92,20 @@
       before: sunrise
   action:
     # CUSTOMIZE: Update with lights you want to randomly toggle
-    - service: light.toggle
+    - service: light.turn_off
       target:
         entity_id:
           - light.lamp_1
+          - light.lamp_2
           - light.sengled_e11_g13_light
+    - delay:
+        minutes: "{{ range(1, 15) | random }}"
+    - service: light.turn_on
+      target:
+        entity_id: >-
+          {{ ['light.lamp_1', 'light.lamp_2', 'light.sengled_e11_g13_light'] | random }}
+      data:
+        brightness: "{{ range(120, 220) | random }}"
 
 # ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 #  Weather Alerts
@@ -220,8 +229,25 @@
       data:
         title: "SMOKE/CO ALARM"
         message: "Smoke or Carbon Monoxide detected! Check immediately."
+        data:
+          push:
+            sound:
+              name: default
+              critical: 1
+              volume: 1.0
+    - service: lock.unlock
+      target:
+        entity_id:
+          - lock.aqara_smart_lock_u100
+          - lock.aqara_smart_lock_u100_2
     - service: light.turn_on
       target:
         entity_id: all
       data:
         brightness: 255
+    - service: persistent_notification.create
+      data:
+        title: "SMOKE/CO ALARM TRIGGERED"
+        message: >-
+          Smoke or CO detected at {{ now().strftime('%I:%M %p') }}.
+          All doors unlocked. All lights on.
