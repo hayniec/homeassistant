@@ -138,6 +138,87 @@ input_select:
 # ZHA                — 3x Sengled E11-G13 bulbs via HUSBZB-1
 # Zigbee2mqtt        — Zigbee devices via Mosquitto
 
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+#  Template Sensors (modern syntax)
+# ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+template:
+  - sensor:
+      # ── Greeting based on time of day ─────────────────
+      - name: "Greeting"
+        state: >-
+          {% set hour = now().hour %}
+          {% if hour < 12 %}Good Morning
+          {% elif hour < 17 %}Good Afternoon
+          {% elif hour < 21 %}Good Evening
+          {% else %}Good Night{% endif %}
+
+      # ── Weather summary for chips/headers ─────────────
+      - name: "Weather Summary"
+        state: >-
+          {% if states('weather.forecast_home') not in ['unknown', 'unavailable'] %}
+            {{ states('weather.forecast_home') | replace('_', ' ') | title }}
+            · {{ state_attr('weather.forecast_home', 'temperature') }}°F
+          {% else %}Weather unavailable{% endif %}
+
+      # ── House status (lights + doors) ─────────────────
+      - name: "House Status"
+        state: >-
+          {% set lights_on = states.light | selectattr('state', 'eq', 'on') | list | count %}
+          {% set doors_open = states.binary_sensor
+             | selectattr('attributes.device_class', 'defined')
+             | selectattr('attributes.device_class', 'eq', 'door')
+             | selectattr('state', 'eq', 'on') | list | count %}
+          {{ lights_on }} lights on · {{ doors_open }} doors open
+
+      # ── Total lights on ───────────────────────────────
+      - name: "Lights On"
+        icon: mdi:lightbulb-group
+        state: >-
+          {{ states.light | selectattr('state', 'eq', 'on') | list | count }}
+
+      # ── Active media players ──────────────────────────
+      - name: "Active Media"
+        icon: mdi:speaker
+        state: >-
+          {{ states.media_player | selectattr('state', 'eq', 'playing') | list | count }}
+
+      # ── Lock status summary ───────────────────────────
+      # CUSTOMIZE: Update lock entity IDs if different
+      - name: "Lock Status"
+        icon: >-
+          {% set l1 = states('lock.aqara_smart_lock_u100') %}
+          {% set l2 = states('lock.aqara_smart_lock_u100_2') %}
+          {{ 'mdi:lock' if l1 == 'locked' and l2 == 'locked' else 'mdi:lock-open-variant' }}
+        state: >-
+          {% set l1 = states('lock.aqara_smart_lock_u100') %}
+          {% set l2 = states('lock.aqara_smart_lock_u100_2') %}
+          {% if l1 == 'locked' and l2 == 'locked' %}All locked
+          {% elif l1 == 'unlocked' and l2 == 'unlocked' %}Both unlocked
+          {% elif l1 == 'unlocked' %}Front unlocked
+          {% elif l2 == 'unlocked' %}Back unlocked
+          {% else %}Unknown{% endif %}
+
+      # ── Alarm status (friendly) ───────────────────────
+      # CUSTOMIZE: Update alarm entity ID if different
+      - name: "Alarm Status"
+        icon: >-
+          {% set state = states('alarm_control_panel.alarm_com') %}
+          {% if state == 'armed_away' %}mdi:shield-lock
+          {% elif state == 'armed_home' %}mdi:shield-home
+          {% elif state == 'armed_night' %}mdi:shield-moon
+          {% elif state == 'disarmed' %}mdi:shield-off
+          {% else %}mdi:shield-alert{% endif %}
+        state: >-
+          {{ states('alarm_control_panel.alarm_com') | replace('_', ' ') | title }}
+
+      # ── Thermostat summary ────────────────────────────
+      # CUSTOMIZE: Update thermostat entity IDs if different
+      - name: "Thermostat Summary"
+        icon: mdi:thermostat
+        state: >-
+          Up: {{ state_attr('climate.upstairs_thermostat', 'current_temperature') | round(0) }}°F
+          · Down: {{ state_attr('climate.basement_thermostat', 'current_temperature') | round(0) }}°F
+
 # Includes
 sensor: !include sensors.yaml
 automation: !include automations.yaml
