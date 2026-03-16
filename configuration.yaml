@@ -171,13 +171,13 @@ template:
           {{ lights_on }} lights on · {{ doors_open }} doors open
 
       # ── Total lights on ───────────────────────────────
-      - name: "Lights On"
+      - name: "Total Lights On"
         icon: mdi:lightbulb-group
         state: >-
           {{ states.light | selectattr('state', 'eq', 'on') | list | count }}
 
       # ── Active media players ──────────────────────────
-      - name: "Active Media"
+      - name: "Active Media Players"
         icon: mdi:speaker
         state: >-
           {{ states.media_player | selectattr('state', 'eq', 'playing') | list | count }}

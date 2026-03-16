@@ -33,7 +33,7 @@ cards:
     cards:
       - type: custom:mushroom-light-card
         entity: light.lamp_1
-        name: Bedroom Lamp 1
+        name: Master Bedroom Left
         icon: mdi:lamp
         show_brightness_control: true
         show_color_temp_control: true
@@ -42,7 +42,7 @@ cards:
         collapsible_controls: true
       - type: custom:mushroom-light-card
         entity: light.lamp_2
-        name: Bedroom Lamp 2
+        name: Master Bedroom Right
         icon: mdi:lamp
         show_brightness_control: true
         show_color_temp_control: true
@@ -56,7 +56,7 @@ cards:
     cards:
       - type: custom:mushroom-light-card
         entity: light.lamp_3
-        name: Bedroom 2 Lamp
+        name: Bedroom 2
         icon: mdi:lamp
         show_brightness_control: true
         show_color_temp_control: true
@@ -65,7 +65,7 @@ cards:
         collapsible_controls: true
       - type: custom:mushroom-light-card
         entity: light.lamp_4
-        name: Bedroom 3 Lamp
+        name: Bedroom 3
         icon: mdi:lamp
         show_brightness_control: true
         show_color_temp_control: true
@@ -92,7 +92,7 @@ cards:
     cards:
       - type: custom:mushroom-light-card
         entity: light.sengled_e11_g13_light
-        name: Sengled 1
+        name: Living Room
         icon: mdi:lightbulb
         show_brightness_control: true
         use_light_color: true
@@ -100,7 +100,7 @@ cards:
         collapsible_controls: true
       - type: custom:mushroom-light-card
         entity: light.sengled_e11_g13_light_2
-        name: Sengled 2
+        name: Kitchen
         icon: mdi:lightbulb
         show_brightness_control: true
         use_light_color: true
@@ -108,7 +108,7 @@ cards:
         collapsible_controls: true
       - type: custom:mushroom-light-card
         entity: light.sengled_e11_g13_light_3
-        name: Sengled 3
+        name: Hallway
         icon: mdi:lightbulb
         show_brightness_control: true
         use_light_color: true

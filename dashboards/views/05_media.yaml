@@ -107,7 +107,4 @@ cards:
       #   info: scroll
       #   toggle_power: true
 
-  # ── Media Browser ──────────────────────────────────────────
-  - type: media-control
-    entity: media_player.living_room_tv
 
