@@ -153,12 +153,19 @@ template:
           {% else %}Good Night{% endif %}
 
       # ── Weather summary for chips/headers ─────────────
-      - name: "Weather Summary"
-        state: >-
-          {% if states('weather.forecast_home') not in ['unknown', 'unavailable'] %}
-            {{ states('weather.forecast_home') | replace('_', ' ') | title }}
-            · {{ state_attr('weather.forecast_home', 'temperature') }}°F
-          {% else %}Weather unavailable{% endif %}
+- default_entity_id: sensor.weather_summary
+    name: Weather Summary
+    state: "{% if states('weather.forecast_home') not in ['unknown', 'unavailable']
+      %}\n  {{ states('weather.forecast_home') | replace('_', ' ') | title }}\n  ·
+      {{ state_attr('weather.forecast_home', 'temperature') }}°F\n{% else %}Weather
+      unavailable{% endif %}"
+      
+     # - name: "Weather Summary"
+      #  state: >-
+       #   {% if states('weather.forecast_home') not in ['unknown', 'unavailable'] %}
+        #    {{ states('weather.forecast_home') | replace('_', ' ') | title }}
+         #   · {{ state_attr('weather.forecast_home', 'temperature') }}°F
+          #{% else %}Weather unavailable{% endif %}
 
       # ── House status (lights + doors) ─────────────────
       - name: "House Status"
