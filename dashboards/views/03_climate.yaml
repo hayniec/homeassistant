@@ -102,7 +102,8 @@ cards:
   - type: custom:mushroom-template-card
     primary: "Humidity"
     secondary: >-
-      Outdoor: {{ state_attr('weather.forecast_home', 'humidity') }}%
+      Indoor: {{ state_attr('climate.upstairs_thermostat', 'current_humidity') | default('N/A') }}%
+      · Outdoor: {{ state_attr('weather.forecast_home', 'humidity') }}%
     icon: mdi:water-percent
     icon_color: blue
 
